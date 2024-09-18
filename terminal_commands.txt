@@ -1,0 +1,16 @@
+To create conda env:
+conda create -n real_time_ml python=3.10.4
+
+Install pipx (to install poetry)
+brew install pipx
+Install poetry
+pipx install poetry
+
+**Actually that didn't work...**
+I use this instead:
+Within the conda env:
+  pip install -U pip setuptools
+  pip install poetry
+
+Install Make
+brew install make

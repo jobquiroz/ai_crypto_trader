@@ -10,6 +10,7 @@ python = "^3.10"
 quixstreams = "^2.10.0"
 loguru = "^0.7.2"
 websocket-client = "^1.8.0"
+pydantic-settings = "^2.5.2"
 
 
 [build-system]

@@ -1,10 +1,10 @@
 
 from typing import List
 from quixstreams import Application
-from src.kraken_websocket_api import (KrakenWebsocketAPI, Trade)
+#from src.kraken_websocket_api import (KrakenWebsocketAPI, Trade)
+from kraken_websocket_api import (KrakenWebsocketAPI, Trade)
 from loguru import logger
 from typing import List
-
 
 def produce_trades(
     kafka_broker_address: str,
@@ -52,8 +52,9 @@ def produce_trades(
 
 if __name__ == "__main__":
 
-    # Load configuration
-    from src.config import config
+    # Load configuration. 
+    #from src.config import config
+    from config import config
 
     produce_trades(
         kafka_broker_address = config.kafka_broker_address,

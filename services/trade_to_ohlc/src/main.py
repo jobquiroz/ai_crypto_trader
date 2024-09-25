@@ -8,23 +8,29 @@ def init_ohlcv_candle(trade: dict):
     """
     Returns the initial OHLCV candle when the first trade in that window is received
     """
-    return {
+    #logger.debug(f"Initializing OHLCV candle with trade: {trade}")
+    initial_ohlcv_candle = {
         "open": trade["price"],
         "high": trade["price"],
         "low": trade["price"],
         "close": trade["price"],
         "volume": trade["quantity"],
-        #"timestamp_ms": 
+        "product_id": trade["product_id"],
     }
+    #logger.debug(f"Initial OHLCV candle: {initial_ohlcv_candle}")
+    return initial_ohlcv_candle
 
 def update_ohlcv_candle(ohlcv_candle: dict, trade: dict):
     """
     Updates the OHLCV candle with the new trade data
     """
+    #logger.debug(f"Updating OHLCV candle with trade: {trade}")
     ohlcv_candle["high"] = max(ohlcv_candle["high"], trade["price"])
     ohlcv_candle["low"] = min(ohlcv_candle["low"], trade["price"])
     ohlcv_candle["close"] = trade["price"]
     ohlcv_candle["volume"] += trade["quantity"]
+    ohlcv_candle['product_id'] = trade['product_id']
+    #logger.debug(f"Updated OHLCV candle: {ohlcv_candle}")
 
     return ohlcv_candle
 
@@ -60,7 +66,7 @@ def transform_trade_to_ohlcv(
     sdf = app.dataframe(input_topic)
 
     # Check if we are actually receiving the data
-    sdf.update(logger.debug)
+    #sdf.update(logger.debug)
 
     # Aggregate the trades into OHLCV candles (1 minute)
     sdf = (
@@ -70,17 +76,21 @@ def transform_trade_to_ohlcv(
          #.current()
      )
 
-   
+    # Print as a dictionary
+    #sdf.update(logger.debug)
 
+  #  breakpoint()
     # Flatten the dictionary
     sdf['open'] = sdf['value']['open']  
     sdf['high'] = sdf['value']['high']
     sdf['low'] = sdf['value']['low']
     sdf['close'] = sdf['value']['close']
     sdf['volume'] = sdf['value']['volume']
+    sdf['product_id'] = sdf['value']['product_id']
     sdf['timestamp_ms'] = sdf['end']
 
-    sdf = sdf[['timestamp_ms', 'open', 'high', 'low', 'close', 'volume']]
+    
+    sdf = sdf[['product_id','timestamp_ms', 'open', 'high', 'low', 'close', 'volume']]
 
     # Print the output to the console
     sdf.update(logger.debug)

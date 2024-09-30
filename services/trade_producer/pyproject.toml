@@ -11,6 +11,8 @@ quixstreams = "^2.10.0"
 loguru = "^0.7.2"
 websocket-client = "^1.8.0"
 pydantic-settings = "^2.5.2"
+requests = "^2.32.3"
+pandas = "^2.2.3"
 
 
 [build-system]

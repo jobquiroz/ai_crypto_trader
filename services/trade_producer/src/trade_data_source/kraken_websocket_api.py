@@ -1,21 +1,27 @@
+from datetime import datetime, timezone
 from typing import List
+import json 
 from websocket import create_connection
 from loguru import logger
-import json 
 
-from pydantic import BaseModel
 
-class Trade(BaseModel):
-    product_id: str
-    quantity: float
-    price: float
-    timestamp_ms: int
+# from pydantic import BaseModel
+
+# class Trade(BaseModel):
+#     product_id: str
+#     quantity: float
+#     price: float
+#     timestamp_ms: int
+
+from src.trade_data_source.trade import Trade
+from src.trade_data_source.base import TradeSource
 
 class KrakenWebsocketAPI:
     """
     Class for reading real-time trades from the Kraken Websocket API
     """
     URL = 'wss://ws.kraken.com/v2' 
+
     def __init__(self, product_id: str):
         """
             Initializes the KrakenWebsocketAPI instance
@@ -38,6 +44,7 @@ class KrakenWebsocketAPI:
 
             Args:
                 None
+
             Returns
                 List[Trade]: A list of Trade objects
         """
@@ -69,11 +76,9 @@ class KrakenWebsocketAPI:
                     price=trade['price'],
                     quantity=trade['qty'],
                     timestamp_ms=self.to_ms(trade['timestamp']),
-                    #timestamp_ms= trade['timestamp'],
                 )
             )
             
-       
         return trades
 
     def is_done(self) -> bool:

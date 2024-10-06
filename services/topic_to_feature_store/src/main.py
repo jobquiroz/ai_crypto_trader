@@ -13,7 +13,8 @@ def topic_to_feature_store(
     feature_group_version: int,
     feature_group_primary_keys: List[str],
     feature_group_event_time: str,
-    start_offline_materialization: bool
+    start_offline_materialization: bool,
+    batch_size: int,
 ):
     """
     Reads incoming messages from the given `kafka_input_topic`, and pushes them to the given
@@ -28,6 +29,7 @@ def topic_to_feature_store(
         feature_group_primary_keys (List[str]): The primary keys of the feature group
         feature_group_event_time (str): The event time of the feature group
         start_offline_materialization (bool): Whether to start offline materialization or not
+        batch_size (int): The number of messages to batch (in memory) before pushing to the feature store
     Returns:
         None
     """
@@ -40,6 +42,9 @@ def topic_to_feature_store(
         #auto_offset_reset='earliest', # by default it is 'latest'
     )
     
+    batch = []
+
+
     # Create a consumer and start a polling loop
     with app.get_consumer() as consumer:
 
@@ -60,9 +65,18 @@ def topic_to_feature_store(
             # Decode the message bytes into a dictionary
             value = json.loads(value.decode('utf-8'))
 
+            # Append the message to the batch
+            batch.append(value)
+
+            # If the batch is not full, continue
+            if len(batch) < batch_size:
+                logger.debug(f'Batch has size {len(batch)} < {batch_size}')
+                continue
+
+            logger.debug(f'Batch has size {len(batch)} >= {batch_size}... Pushing data to the feature store')
             # We need to push the value to the feature store
             push_value_to_feature_group(
-                value,
+                batch,
                 feature_group_name,
                 feature_group_version,
                 feature_group_primary_keys,
@@ -70,7 +84,8 @@ def topic_to_feature_store(
                 start_offline_materialization,
             )
 
-            #breakpoint()
+            # Clear the batch
+            batch = []
 
             consumer.store_offsets(message=msg)
 
@@ -88,5 +103,5 @@ if __name__ == "__main__":
         feature_group_primary_keys = config.feature_group_primary_keys,
         feature_group_event_time = config.feature_group_event_time,
         start_offline_materialization = config.start_offline_materialization,
-
+        batch_size = config.batch_size,
     )

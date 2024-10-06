@@ -72,7 +72,6 @@ def transform_trade_to_ohlcv(
     app = Application(
         broker_address=kafka_broker_address, 
         consumer_group=kafka_consumer_group)
-
     
     
     input_topic = app.topic(name=kafka_input_topic, value_deserializer='json',

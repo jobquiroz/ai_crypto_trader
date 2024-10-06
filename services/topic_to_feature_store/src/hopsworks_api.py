@@ -12,7 +12,7 @@ feature_store = project.get_feature_store()
 
 
 def push_value_to_feature_group(
-    value: dict, 
+    value: List[dict], 
     feature_group_name: str, 
     feature_group_version: int,
     feature_group_primary_keys: List[str],
@@ -46,7 +46,7 @@ def push_value_to_feature_group(
         #expectation_suite = expectation_suite_transactions,
     )
     # Transform the value dict into a pandas 
-    value_df = pd.DataFrame([value])
+    value_df = pd.DataFrame(value)
 
     # breakpoint()
 

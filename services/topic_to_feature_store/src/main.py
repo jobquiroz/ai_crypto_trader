@@ -44,7 +44,6 @@ def topic_to_feature_store(
     
     batch = []
 
-
     # Create a consumer and start a polling loop
     with app.get_consumer() as consumer:
 
@@ -70,10 +69,10 @@ def topic_to_feature_store(
 
             # If the batch is not full, continue
             if len(batch) < batch_size:
-                logger.debug(f'Batch has size {len(batch)} < {batch_size}')
+                logger.debug(f'Batch has size {len(batch)} < {batch_size:,}')
                 continue
 
-            logger.debug(f'Batch has size {len(batch)} >= {batch_size}... Pushing data to the feature store')
+            logger.debug(f'Batch has size {len(batch)} >= {batch_size:,}... Pushing data to the feature store')
             # We need to push the value to the feature store
             push_value_to_feature_group(
                 batch,
